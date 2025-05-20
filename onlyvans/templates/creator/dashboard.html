@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% load custom_filters %}
+{% block content %}
+<div class="container main py-5">
+    {% include 'messages.html' %}
+    <h2>
+        👋 {% random_greeting %}, <a href="{% url 'profile' user.username %}">{% if user.first_name %}{{ user.first_name }}{% else %}@{{ user.username }}{% endif %}!</a>
+        &nbsp;
+        <a class="btn btn-primary" href="{% url 'creator:create-post' %}">Create a new post</a>
+    </h2>
+    <hr>
+    <div class="row">
+        <div class="col-md-12">
+            <h3>Your posts:</h3>
+            {% include 'creator/feed.html' with posts=posts show_visibility=False %}
+        </div>
+    </div>
+</div>
+{% endblock %}

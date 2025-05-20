@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% block title %}Discover Creators{% endblock %}
+{% block content %}
+<div class="container main py-5">
+    {% include 'messages.html' %}
+    <h2>🔍 Discover Content Creators</h2>
+    <hr>
+
+    <!-- Search Bar -->
+    <form method="GET" action="{% url 'client:discover_creators' %}" class="mb-4">
+        <div class="input-group">
+            <input type="text" name="q" value="{{ search_query }}" class="form-control" placeholder="Search for creators...">
+            <button class="btn btn-primary" type="submit">Search</button>
+        </div>
+    </form>
+
+    {% if search_query %}
+        <h3>Search Results for "{{ search_query }}"</h3>
+        <div class="row">
+            {% for creator in search_results %}
+                <div class="col-md-4 mb-4">
+                    {% include 'creator/creator_card.html' %}
+                </div>
+            {% endfor %}
+            {% if not search_results %}
+                <p>No results found.</p>
+            {% endif %}
+        </div>
+        <hr>
+    {% endif %}
+
+    <h3>🔥 Top Creators</h3>
+    <div class="row">
+        {% for creator in top_creators %}
+            <div class="col-md-4 mb-4">
+                {% include 'creator/creator_card.html' %}
+            </div>
+        {% endfor %}
+    </div>
+
+    <hr>
+
+    <h3>🌟 New Faces</h3>
+    <div class="row">
+        {% for creator in new_faces %}
+            <div class="col-md-4 mb-4">
+                {% include 'creator/creator_card.html' %}
+            </div>
+        {% endfor %}
+    </div>
+
+    <hr>
+
+    <h3>💪 Most Active Creators</h3>
+    <div class="row">
+        {% for creator in most_active_creators %}
+            <div class="col-md-4 mb-4">
+                {% include 'creator/creator_card.html' %}
+            </div>
+        {% endfor %}
+    </div>
+
+    <hr>
+
+    <h3>🎲 Random Creators</h3>
+    <div class="row">
+        {% for creator in random_creators %}
+            <div class="col-md-4 mb-4">
+                {% include 'creator/creator_card.html' %}
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

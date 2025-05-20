@@ -1,0 +1,16 @@
+{% extends 'base.html' %}{% block title %}Sign Up{% endblock %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div class="container main py-5">
+    {% include 'messages.html' %}
+    <h2>Зарегистрироваться</h2>
+    <form method="POST" autocomplete="off">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <p class="form-text">
+            Поставьте галочку, если вы автор. <strong>Вы не сможете испроавить это позже</strong>
+        </p>
+        <input class="btn btn-outline-primary" type="submit" value="Register" />
+    </form>
+</div>
+{% endblock %}

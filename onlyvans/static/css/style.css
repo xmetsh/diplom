@@ -1,0 +1,150 @@
+.main {
+    min-height: 100vh;
+    max-width: 1000px
+}
+
+.alert {
+    margin-top: 5 px;
+    z-index: 1000;
+}
+
+.carousel-item {
+    max-height: 720px;
+}
+
+.carousel-item img, .carousel-item video {
+    height: 100%;
+    object-fit: cover;  /* This will cover the area, cropping the image as needed */
+    width: 100%;
+}
+
+.carousel-indicators {
+    margin-bottom: 3rem;
+}
+
+.carousel-control-prev, .carousel-control-next {
+    height: 50%;
+    top: 25%;
+}
+
+.card-img-top {
+    height: 720px;  /* Ensures single images have the same height as carousel images */
+    object-fit: cover;
+    width: 100%;
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;  /* This will spread out the elements */
+    padding: 15px;  /* Adds padding inside the header */
+    background-color: rgba(255, 255, 255, 0.8);  /* Optional: adds slight transparency */
+}
+.card-header h5 {
+margin-bottom: 0;
+}
+.creator-card {
+height: 500px;
+}
+
+.creator-card .card-img-top {
+height: 150px;
+}
+
+.creator-card .card-body img {
+    border: 8px solid #ffffff;  /* White border, increase thickness */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-top: -50px;  /* Moves the image up */
+}
+
+.profile-header {
+    height: 300px;
+    background-size: cover;
+    background-position: center;
+}
+
+.profile-avatar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 300px;
+}
+
+.profile-avatar img {
+    width: 200px;
+    height: 200px;
+    object-fit: cover;
+    border: 8px solid #ffffff;  /* White border, increase thickness */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.profile-info {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.social-links a {
+    margin-right: 15px;
+    text-decoration: none;
+    color: #007bff;  /* Bootstrap primary color */
+}
+
+.social-links a:hover {
+    text-decoration: underline;
+}
+
+.profile-actions .btn {
+    padding: 10px 20px;  /* Larger button for better touch */
+}
+
+.profile-stats {
+    display: flex;
+    justify-content: center;  /* Centers the stats in the container */
+    flex-wrap: wrap;  /* Allows items to wrap in smaller screens */
+    margin-top: 20px;  /* Adds space above the stats section */
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.9);  /* Light background for the stats */
+    border-radius: 10px;  /* Rounded corners */
+}
+
+.profile-stats span {
+    margin: 5px 15px;  /* Adds vertical and horizontal spacing between stats */
+    font-size: 16px;  /* Larger font size for better readability */
+    display: flex;
+    align-items: center;  /* Centers the text and icons vertically */
+    padding: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);  /* Subtle shadow for depth */
+}
+
+.profile-stats span svg {
+    margin-right: 5px;  /* Space between icon and text */
+}
+
+#messages-container {
+    background-color: #f9f9f9;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+#messages-container .d-flex {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.liked {
+    font-weight: bold;
+    color: #007bff;
+}
+
+.unliked {
+    font-weight: normal;
+    color: black;
+}
