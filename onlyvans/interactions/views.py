@@ -11,6 +11,7 @@ from django.core.paginator import Paginator
 from django.http import JsonResponse
 from django.contrib import messages
 
+
 @login_required
 def direct_messages(request):
     """
@@ -50,6 +51,7 @@ def direct_messages(request):
         'threads': threads_page,
     })
 
+
 @login_required
 def view_thread(request, username=None, thread_id=None):
     """
@@ -76,10 +78,11 @@ def view_thread(request, username=None, thread_id=None):
 
         # Prevent users from messaging themselves
         if user == other_user:
-            messages.error(request, "You cannot message yourself.")
+            messages.error(request, "Вы не можете написать сами себе.")
             return redirect('direct_messages')
 
-        thread = Thread.objects.filter(participants=user).filter(participants=other_user).first()
+        thread = Thread.objects.filter(participants=user).filter(
+            participants=other_user).first()
         if not thread:
             # Create a new thread
             thread = Thread.objects.create()
@@ -87,14 +90,16 @@ def view_thread(request, username=None, thread_id=None):
     else:
         thread = get_object_or_404(Thread, id=thread_id)
         if user not in thread.participants.all():
-            messages.error(request, "You do not have permission to view this thread.")
+            messages.error(
+                request, "У вас нет прав на просмотр этого чата.")
             return redirect('direct_messages')
 
         other_user = thread.get_other_participant(user)
 
     # Messaging permissions check
     if not has_messaging_permission(user, other_user):
-        messages.error(request, "You do not have permission to message this user.")
+        messages.error(
+            request, "Вы не можете написать этому человеку.")
         return redirect('direct_messages')
 
     form = MessageForm(request.POST or None)
@@ -111,6 +116,7 @@ def view_thread(request, username=None, thread_id=None):
         'form': form,
         'other_participant': other_user,
     })
+
 
 @login_required
 def like_post(request, post_id):

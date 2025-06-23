@@ -21,7 +21,8 @@ class CustomUserCreationForm(UserCreationForm):
 
     class Meta:
         model = CustomUser
-        fields = ("username", "email", "password1", "password2", "is_content_creator")
+        fields = ("username", "email", "password1",
+                  "password2", "is_content_creator")
 
     def clean_username(self):
         """
@@ -35,7 +36,8 @@ class CustomUserCreationForm(UserCreationForm):
         """
         username = self.cleaned_data['username'].lower()
         if username in RESERVED_USERNAMES:
-            raise ValidationError("This username is reserved and cannot be used.")
+            raise ValidationError(
+                "Это имя уже занято.")
         return username
 
 
@@ -50,7 +52,8 @@ class CustomUserChangeForm(UserChangeForm):
 
     class Meta:
         model = CustomUser
-        fields = ('username', 'email', 'first_name', 'last_name', 'is_content_creator')
+        fields = ('username', 'email', 'first_name',
+                  'last_name', 'is_content_creator')
 
 
 class CustomUserUpdateForm(forms.ModelForm):
@@ -81,9 +84,10 @@ class CustomUserUpdateForm(forms.ModelForm):
         user = self.instance
         if user.stripe_account_id:
             self.fields['stripe_account_id'] = forms.CharField(
-                label="Stripe Account ID",
+                label="ID платежной системы",
                 initial=user.stripe_account_id,
-                widget=forms.TextInput(attrs={'readonly': 'readonly', 'disabled': 'disabled'}),
+                widget=forms.TextInput(
+                    attrs={'readonly': 'readonly', 'disabled': 'disabled'}),
                 required=False
             )
 
@@ -98,7 +102,8 @@ class CustomUserUpdateForm(forms.ModelForm):
         cleaned_data = super().clean()
         user = self.instance
         if user.is_content_creator and not user.stripe_account_id:
-            cleaned_data["stripe_account_id"] = None  # Ensure it is not required if it doesn't exist
+            # Ensure it is not required if it doesn't exist
+            cleaned_data["stripe_account_id"] = None
         return cleaned_data
 
 
@@ -113,7 +118,8 @@ class UserProfileForm(forms.ModelForm):
 
     class Meta:
         model = UserProfile
-        fields = ['profile_pic', 'background_pic', 'description', 'website_url', 'twitter_url', 'instagram_url']
+        fields = ['profile_pic', 'background_pic', 'description',
+                  'website_url', 'twitter_url', 'instagram_url']
 
 
 class UserPasswordChangeForm(PasswordChangeForm):
@@ -134,6 +140,6 @@ class UserPasswordChangeForm(PasswordChangeForm):
         Initializes the form and customizes field labels.
         """
         super(UserPasswordChangeForm, self).__init__(*args, **kwargs)
-        self.fields['old_password'].label = "Current Password"
-        self.fields['new_password1'].label = "New Password"
-        self.fields['new_password2'].label = "Confirm New Password"
+        self.fields['old_password'].label = "Текущий пароль"
+        self.fields['new_password1'].label = "Новый пароль"
+        self.fields['new_password2'].label = "Повторите новый пароль"

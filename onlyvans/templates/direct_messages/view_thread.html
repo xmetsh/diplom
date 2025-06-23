@@ -6,7 +6,8 @@
 {% block content %}
 <div class="container main py-5">
     {% include 'messages.html' %}
-    <h2>📨 Messages with <a href="{% url 'profile' other_participant.username %}">@{{ other_participant.username }}</a></h2>
+    <h2>📨 Сообщения с <a href="{% url 'profile' other_participant.username %}">@{{ other_participant.username }}</a>
+    </h2>
     <hr>
     <div class="row">
         <div class="col-md-8 offset-md-2">
@@ -14,23 +15,29 @@
                 <div class="card-body">
                     <div id="messages-container" class="overflow-auto" style="max-height: 400px;">
                         {% for message in direct_messages %}
-                        <div class="d-flex mb-3 {% if message.sender == request.user %}justify-content-end{% else %}justify-content-start{% endif %}">
+                        <div
+                            class="d-flex mb-3 {% if message.sender == request.user %}justify-content-end{% else %}justify-content-start{% endif %}">
                             {% if message.sender != request.user %}
                             {% if message.sender.profile.profile_pic %}
-                            <img src="{{ message.sender.profile.profile_pic.url }}" alt="Avatar" class="rounded-circle me-2" style="width: 40px; height: 40px;">
+                            <img src="{{ message.sender.profile.profile_pic.url }}" alt="Avatar"
+                                class="rounded-circle me-2" style="width: 40px; height: 40px;">
                             {% else %}
-                            <img src="{% static 'img/avatar.png' %}" alt="Avatar" class="rounded-circle me-2" style="width: 40px; height: 40px;">
+                            <img src="{% static 'img/avatar.png' %}" alt="Avatar" class="rounded-circle me-2"
+                                style="width: 40px; height: 40px;">
                             {% endif %}
                             {% endif %}
-                            <div class="{% if message.sender == request.user %}bg-primary text-white{% else %}bg-light{% endif %} rounded p-2 shadow-sm">
+                            <div
+                                class="{% if message.sender == request.user %}bg-primary text-white{% else %}bg-light{% endif %} rounded p-2 shadow-sm">
                                 <p class="mb-1">{{ message.body }}</p>
                                 <small class="text-muted">{{ message.sent_at|date:"F j, Y, g:i a" }}</small>
                             </div>
                             {% if message.sender == request.user %}
                             {% if message.sender.profile.profile_pic %}
-                            <img src="{{ message.sender.profile.profile_pic.url }}" alt="Avatar" class="rounded-circle ms-2" style="width: 40px; height: 40px;">
+                            <img src="{{ message.sender.profile.profile_pic.url }}" alt="Avatar"
+                                class="rounded-circle ms-2" style="width: 40px; height: 40px;">
                             {% else %}
-                            <img src="{% static 'img/avatar.png' %}" alt="Avatar" class="rounded-circle ms-2" style="width: 40px; height: 40px;">
+                            <img src="{% static 'img/avatar.png' %}" alt="Avatar" class="rounded-circle ms-2"
+                                style="width: 40px; height: 40px;">
                             {% endif %}
                             {% endif %}
                         </div>
@@ -40,7 +47,7 @@
                     <form method="post" id="message-form">
                         {% csrf_token %}
                         {{ form.body|as_crispy_field }}
-                        <button type="submit" class="btn btn-primary mt-2">Send</button>
+                        <button type="submit" class="btn btn-primary mt-2">Отправить</button>
                     </form>
                 </div>
             </div>

@@ -37,7 +37,8 @@ def client_required(view_func):
             return view_func(request, *args, **kwargs)
         else:
             # User is not a client, redirect to the home page with an error message
-            messages.error(request, "You need to be a client to access this page.")
+            messages.error(
+                request, "Вы должны авторизоваться, чтобы получить доступ к странице.")
             return redirect('home')
 
     return wrapper_func

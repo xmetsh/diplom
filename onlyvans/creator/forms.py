@@ -26,10 +26,10 @@ class PostForm(forms.ModelForm):
         model = Post
         fields = ['title', 'text', 'is_free', 'tier']
         labels = {
-            'title': 'Title',
-            'text': 'Content',
-            'is_free': 'Is this a free post?',
-            'tier': 'Choose a tier',
+            'title': 'Заголовок',
+            'text': 'Описание',
+            'is_free': 'Это бесплатная публикация?',
+            'tier': 'Выберите уровень подписки',
         }
 
     def __init__(self, *args, **kwargs):
@@ -60,7 +60,8 @@ class PostForm(forms.ModelForm):
         if is_free:
             cleaned_data['tier'] = None
         elif not tier:
-            self.add_error('tier', 'This field is required for paid posts.')
+            self.add_error(
+                'tier', 'Это поле обязательное для заполнения к платной публикации.')
 
         return cleaned_data
 
@@ -93,6 +94,11 @@ class TierForm(forms.ModelForm):
     class Meta:
         model = Tier
         fields = ['name', 'points_price', 'description', 'message_permission']
+        labels = {
+            'name': 'Название',
+            'points_price': 'Цена в монетах',
+            'description': 'Описание',
+            'message_permission': 'Разрешить сообщения'}
 
     def __init__(self, *args, **kwargs):
         """
@@ -108,7 +114,8 @@ class TierForm(forms.ModelForm):
         name = self.cleaned_data['name']
         user = self.user
         if user and Tier.objects.filter(user=user, name=name).exists():
-            raise forms.ValidationError("You already have a tier with this name.")
+            raise forms.ValidationError(
+                "У вас уже есть подписка с таким именем.")
         return name
 
     def clean_points_price(self):
@@ -117,7 +124,7 @@ class TierForm(forms.ModelForm):
         """
         price = self.cleaned_data.get('points_price')
         if price is not None and price <= 0:
-            raise ValidationError(_("Price must be greater than zero."))
+            raise ValidationError(_("Цена должна быть больше 0."))
         return price
 
     def clean(self):
@@ -126,5 +133,6 @@ class TierForm(forms.ModelForm):
         """
         cleaned_data = super().clean()
         if self.user and Tier.objects.filter(user=self.user).count() >= 12:
-            raise forms.ValidationError("You cannot have more than 12 tiers.")
+            raise forms.ValidationError(
+                "Вы не можете иметь более 12 подписок.")
         return cleaned_data

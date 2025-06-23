@@ -29,18 +29,22 @@ def dashboard(request):
         Rendered dashboard HTML page with posts and liked posts.
     """
     user = request.user
-    active_subscriptions = Subscription.objects.filter(user=user, status='ACTIVE')
+    active_subscriptions = Subscription.objects.filter(
+        user=user, status='ACTIVE')
     followed_creators = [sub.tier.user for sub in active_subscriptions]
     posts_list = Post.objects.filter(
         Q(user__in=followed_creators, is_free=True) |
-        Q(user__in=followed_creators, tier__in=[sub.tier for sub in active_subscriptions])
+        Q(user__in=followed_creators, tier__in=[
+          sub.tier for sub in active_subscriptions])
     ).distinct().order_by('-posted_at')
 
-    posts_list = posts_list.annotate(visible=Value(True, output_field=CharField()))
+    posts_list = posts_list.annotate(
+        visible=Value(True, output_field=CharField()))
     paginator = Paginator(posts_list, 10)
     page_number = request.GET.get('page')
     posts = paginator.get_page(page_number)
-    liked_posts = Like.objects.filter(user=request.user, post__in=posts_list).values_list('post_id', flat=True)
+    liked_posts = Like.objects.filter(
+        user=request.user, post__in=posts_list).values_list('post_id', flat=True)
 
     return render(request, 'client/dashboard.html', {
         'posts': posts,
@@ -64,11 +68,13 @@ def discover_creators(request):
     """
     search_query = request.GET.get('q', '')
     top_creators = User.objects.filter(is_content_creator=True).annotate(
-        subscribers_count=Count('tiers__subscribers', filter=Q(tiers__subscribers__status='ACTIVE'))
+        subscribers_count=Count('tiers__subscribers', filter=Q(
+            tiers__subscribers__status='ACTIVE'))
     ).order_by('-subscribers_count')[:6]
 
     new_faces = User.objects.filter(is_content_creator=True).annotate(
-        subscribers_count=Count('tiers__subscribers', filter=Q(tiers__subscribers__status='ACTIVE'))
+        subscribers_count=Count('tiers__subscribers', filter=Q(
+            tiers__subscribers__status='ACTIVE'))
     ).order_by('-date_joined')[:6]
 
     most_active_creators = User.objects.filter(is_content_creator=True).annotate(
@@ -76,21 +82,20 @@ def discover_creators(request):
         messages_count=Count('sent_messages')
     ).order_by('-posts_count', '-messages_count')[:6]
 
-    all_creators = list(User.objects.filter(is_content_creator=True))
-    random.shuffle(all_creators)
-    random_creators = all_creators[:6]
+    all_creators = list(User.objects.filter(is_content_creator=True).all())
 
     search_results = User.objects.filter(
         username__icontains=search_query, is_content_creator=True
     ).annotate(
-        subscribers_count=Count('tiers__subscribers', filter=Q(tiers__subscribers__status='ACTIVE'))
+        subscribers_count=Count('tiers__subscribers', filter=Q(
+            tiers__subscribers__status='ACTIVE'))
     ) if search_query else []
 
     return render(request, 'client/discover_creators.html', {
         'top_creators': top_creators,
         'new_faces': new_faces,
         'most_active_creators': most_active_creators,
-        'random_creators': random_creators,
+        'all_creators': all_creators,
         'search_results': search_results,
         'search_query': search_query
     })
@@ -111,7 +116,8 @@ def select_tier(request, username):
     Returns:
         Rendered select tier HTML page with the creator and their tiers.
     """
-    creator = get_object_or_404(User, username=username, is_content_creator=True)
+    creator = get_object_or_404(
+        User, username=username, is_content_creator=True)
     tiers = Tier.objects.filter(user=creator)
     return render(request, 'client/select_tier.html', {'creator': creator, 'tiers': tiers})
 
@@ -133,7 +139,8 @@ def subscribe_to_tier(request, username, tier_id):
     Returns:
         Redirects to the dashboard or select tier page with a success or error message.
     """
-    creator = get_object_or_404(User, username=username, is_content_creator=True)
+    creator = get_object_or_404(
+        User, username=username, is_content_creator=True)
     tier = get_object_or_404(Tier, id=tier_id, user=creator)
     user = request.user
 
@@ -150,11 +157,12 @@ def subscribe_to_tier(request, username, tier_id):
     ).exists()
 
     if active_subscription:
-        messages.error(request, 'You already have an active subscription to this creator.')
+        messages.error(
+            request, 'У вас уже есть активная подписка на этого автора.')
         return redirect('client:subscriptions')
 
     if user.wallet.balance < tier.points_price:
-        messages.error(request, 'You do not have enough points to subscribe to this tier.')
+        messages.error(request, 'У вас недостаточно монет для подписки.')
         return redirect('client:select-tier', username=username)
 
     user.wallet.balance -= tier.points_price
@@ -174,16 +182,16 @@ def subscribe_to_tier(request, username, tier_id):
     Event.objects.create(
         user=user,
         event_type='SUBSCRIPTION',
-        description=f'Subscribed to {creator.username}\'s {tier.name} tier for 30 days.'
+        description=f'Подписался на {creator.username} подпиской {tier.name} на 30 дней.'
     )
 
     Event.objects.create(
         user=creator,
         event_type='SUBSCRIPTION',
-        description=f'{user.username} subscribed to your {tier.name} tier for 30 days.'
+        description=f'{user.username} подписался на вашу подписку {tier.name} на 30 дней.'
     )
 
-    messages.success(request, 'You have successfully subscribed to the tier.')
+    messages.success(request, 'Подписка успешно оформлена.')
     return redirect('client:dashboard')
 
 
@@ -202,7 +210,8 @@ def subscriptions(request):
         Rendered subscriptions HTML page with the user's active subscriptions.
     """
     user = request.user
-    subscriptions = Subscription.objects.filter(user=user, status='ACTIVE').select_related('tier__user')
+    subscriptions = Subscription.objects.filter(
+        user=user, status='ACTIVE').select_related('tier__user')
     return render(request, 'client/subscriptions.html', {
         'subscriptions': subscriptions,
     })
@@ -223,12 +232,14 @@ def extend_subscription(request, subscription_id):
     Returns:
         Redirects to the subscriptions page with a success or error message.
     """
-    subscription = get_object_or_404(Subscription, id=subscription_id, user=request.user, status='ACTIVE')
+    subscription = get_object_or_404(
+        Subscription, id=subscription_id, user=request.user, status='ACTIVE')
     user = request.user
     tier = subscription.tier
 
     if user.wallet.balance < tier.points_price:
-        messages.error(request, 'You do not have enough points to extend this subscription.')
+        messages.error(
+            request, 'У вас недостаточно монет для продления этой подписки.')
         return redirect('client:subscriptions')
 
     user.wallet.balance -= tier.points_price
@@ -243,16 +254,16 @@ def extend_subscription(request, subscription_id):
     Event.objects.create(
         user=user,
         event_type='SUBSCRIPTION_EXTENDED',
-        description=f'Extended subscription to {creator.username}\'s {tier.name} tier.'
+        description=f'{tier.name} продлили подписку на {creator.username}.'
     )
 
     Event.objects.create(
         user=creator,
         event_type='SUBSCRIPTION_EXTENDED',
-        description=f'{user.username} extended their subscription to your {tier.name} tier.'
+        description=f'{user.username} продлили свою подписку на {tier.name}.'
     )
 
-    messages.success(request, 'You have successfully extended the subscription.')
+    messages.success(request, 'Вы успешно продлили подписку.')
     return redirect('client:subscriptions')
 
 
@@ -271,21 +282,22 @@ def cancel_subscription(request, subscription_id):
     Returns:
         Redirects to the subscriptions page with a success message.
     """
-    subscription = get_object_or_404(Subscription, id=subscription_id, user=request.user, status='ACTIVE')
+    subscription = get_object_or_404(
+        Subscription, id=subscription_id, user=request.user, status='ACTIVE')
     subscription.status = 'CANCELLED'
     subscription.save()
 
     Event.objects.create(
         user=request.user,
         event_type='SUBSCRIPTION_CANCELLED',
-        description=f'Cancelled subscription to {subscription.tier.user.username}\'s {subscription.tier.name} tier.'
+        description=f'Отменил подписку {subscription.tier.user.username} {subscription.tier.name}.'
     )
 
     Event.objects.create(
         user=subscription.tier.user,
         event_type='SUBSCRIPTION_CANCELLED',
-        description=f'{request.user.username} cancelled their subscription to your {subscription.tier.name} tier.'
+        description=f'{request.user.username} отменили подписку на уровни {subscription.tier.name}.'
     )
 
-    messages.success(request, 'You have successfully cancelled the subscription.')
+    messages.success(request, 'Подписка успешно отменена.')
     return redirect('client:subscriptions')

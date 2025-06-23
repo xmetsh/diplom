@@ -14,4 +14,4 @@ def get_upload_to(instance, filename):
     elif filename.endswith('.mp4') or filename.endswith('.avi'):
         return 'videos/{}'.format(filename)
     else:
-        raise ValueError("Unsupported file type")
+        raise ValueError("Неподдерживаемый тип файла")

@@ -10,7 +10,7 @@ class Command(BaseCommand):
     the `renew_subscriptions` function to renew any subscriptions that are
     due for renewal and outputs a success message upon completion.
     """
-    help = 'Renew subscriptions that are due for renewal'
+    help = 'Возобновите подписки, которые можно.'
 
     def handle(self, *args, **kwargs):
         """
@@ -18,4 +18,4 @@ class Command(BaseCommand):
         and writes a success message to stdout.
         """
         renew_subscriptions()
-        self.stdout.write(self.style.SUCCESS('Successfully renewed subscriptions'))
+        self.stdout.write(self.style.SUCCESS('Успешно продленные подписки'))

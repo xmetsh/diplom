@@ -4,6 +4,7 @@ from creator.models import Post
 from django.utils import timezone
 from django.core.exceptions import ValidationError
 
+
 class Thread(models.Model):
     """
     Represents a thread of messages between two users.
@@ -19,7 +20,7 @@ class Thread(models.Model):
     participants = models.ManyToManyField(CustomUser, related_name='threads')
 
     def __str__(self):
-        return f"Thread between {', '.join(participant.username for participant in self.participants.all())}"
+        return f"Чат между {', '.join(participant.username for participant in self.participants.all())}"
 
     def get_other_participant(self, user):
         """
@@ -42,7 +43,8 @@ class Thread(models.Model):
         """
         super().clean()
         if self.participants.count() > 2:
-            raise ValidationError("A Thread can only have two participants.")
+            raise ValidationError("В чате может быть только два участника.")
+
 
 class Message(models.Model):
     """
@@ -57,13 +59,16 @@ class Message(models.Model):
     Methods:
     - __str__(): Returns a string representation of the message, indicating the sender and the thread.
     """
-    thread = models.ForeignKey(Thread, related_name='messages', on_delete=models.CASCADE)
-    sender = models.ForeignKey(CustomUser, related_name='sent_messages', on_delete=models.CASCADE)
+    thread = models.ForeignKey(
+        Thread, related_name='messages', on_delete=models.CASCADE)
+    sender = models.ForeignKey(
+        CustomUser, related_name='sent_messages', on_delete=models.CASCADE)
     body = models.TextField()
     sent_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
-        return f"Message from {self.sender.username} in thread {self.thread}"
+        return f"Сообщения от {self.sender.username} в чате {self.thread}"
+
 
 class Like(models.Model):
     """
@@ -78,11 +83,13 @@ class Like(models.Model):
     - unique_together: Ensures that a user can like a post only once.
     """
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='likes')
+    post = models.ForeignKey(
+        Post, on_delete=models.CASCADE, related_name='likes')
     liked_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         unique_together = ('user', 'post')
+
 
 class Comment(models.Model):
     """
@@ -95,6 +102,7 @@ class Comment(models.Model):
     - commented_at: The timestamp when the comment was made.
     """
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
+    post = models.ForeignKey(
+        Post, on_delete=models.CASCADE, related_name='comments')
     text = models.TextField()
     commented_at = models.DateTimeField(auto_now_add=True)

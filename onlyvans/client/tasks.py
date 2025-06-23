@@ -2,6 +2,7 @@ from django.utils import timezone
 from .models import Subscription
 from account.models import Event
 
+
 def renew_subscriptions():
     """
     Function to renew subscriptions that are due for renewal.
@@ -11,7 +12,8 @@ def renew_subscriptions():
     now = timezone.now()  # Get the current time with timezone support
 
     # Get all active subscriptions that have reached their end date
-    subscriptions = Subscription.objects.filter(status='ACTIVE', end_date__lte=now)
+    subscriptions = Subscription.objects.filter(
+        status='ACTIVE', end_date__lte=now)
 
     for subscription in subscriptions:
         user = subscription.user
@@ -37,14 +39,14 @@ def renew_subscriptions():
             Event.objects.create(
                 user=user,
                 event_type='SUBSCRIPTION',
-                description=f'Subscribed to {creator.username}\'s {tier.name} tier for another 30 days.'
+                description=f'Подписался на {creator.username} подписку {tier.name} на 30 дней.'
             )
 
             # Create subscription event for the creator
             Event.objects.create(
                 user=creator,
                 event_type='SUBSCRIPTION',
-                description=f'{user.username} renewed subscription to your {tier.name} tier for another 30 days.'
+                description=f'{user.username} обновил подписку на вашу {tier.name} подписку на следующие 30 дней.'
             )
         else:
             # If the user does not have enough points, mark the subscription as expired
@@ -62,5 +64,5 @@ def renew_subscriptions():
             Event.objects.create(
                 user=creator,
                 event_type='SUBSCRIPTION',
-                description=f'{user.username} subscription to your {tier.name} tier expired.'
+                description=f'{user.username} подписка на вашу подписку {tier.name} истекла.'
             )

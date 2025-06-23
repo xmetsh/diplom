@@ -1,11 +1,9 @@
 {% extends 'base.html' %}{% block title %}Log In{% endblock %}
 {% load crispy_forms_tags %}
 {% block content %}
-{% trans "Login" %}
-
 <div class="container main py-5">
     {% include 'messages.html' %}
-    <h2>Login</h2>
+    <h2>Войти</h2>
     <form method="POST" autocomplete="off">
         {% csrf_token %}
         {{ form|crispy}}

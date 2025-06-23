@@ -5,14 +5,21 @@
 <div class="container main py-5">
     {% include 'messages.html' %}
     <h2>
-        👋 {% random_greeting %}, <a href="{% url 'profile' user.username %}">{% if user.first_name %}{{ user.first_name }}{% else %}@{{ user.username }}{% endif %}!</a>
+        {% random_greeting as greeting %}
+        <h2>👋 {{ greeting }}, <a href="{% url 'profile' user.username %}">
+                {% if user.first_name %}
+                {{ user.first_name }}
+                {% else %}
+                @{{ user.username }}
+                {% endif %}
+            </a>!</h2>
         &nbsp;
-        <a class="btn btn-primary" href="{% url 'creator:create-post' %}">Create a new post</a>
+        <a class="btn btn-primary" href="{% url 'creator:create-post' %}">Сделать публикацию</a>
     </h2>
     <hr>
     <div class="row">
         <div class="col-md-12">
-            <h3>Your posts:</h3>
+            <h3>Ваша публикация:</h3>
             {% include 'creator/feed.html' with posts=posts show_visibility=False %}
         </div>
     </div>

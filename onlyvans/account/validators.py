@@ -2,6 +2,7 @@ import re
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
+
 def validate_twitter_url(value):
     """
     Validates that the given value is a valid Twitter URL.
@@ -12,12 +13,13 @@ def validate_twitter_url(value):
     Raises:
         ValidationError: If the URL is not a valid Twitter URL.
     """
-    twitter_pattern = r"^https:\/\/(www\.)?(twitter\.com\/|x\.com\/)[a-zA-Z0-9_]{1,15}\/?$"
+    twitter_pattern = r"^https:\/\/(www\.)?(youtube\.com\/|x\.com\/)?(@)[a-zA-Z0-9_]{1,15}\/?$"
     if not re.match(twitter_pattern, value):
         raise ValidationError(
-            _('Invalid Twitter URL.'),
+            _('Неправильная ссылка на Youtube.'),
             params={'value': value},
         )
+
 
 def validate_instagram_url(value):
     """
@@ -29,9 +31,9 @@ def validate_instagram_url(value):
     Raises:
         ValidationError: If the URL is not a valid Instagram URL.
     """
-    instagram_pattern = r"^https:\/\/(www\.)?instagram\.com\/[a-zA-Z0-9._]{1,30}\/?$"
+    instagram_pattern = r"^https:\/\/(www\.)?vk\.com\/[a-zA-Z0-9._]{1,30}\/?$"
     if not re.match(instagram_pattern, value):
         raise ValidationError(
-            _('Invalid Instagram URL.'),
+            _('Неправильная ссылка на VK.'),
             params={'value': value},
         )

@@ -28,6 +28,8 @@ def purchase_points(request):
     Returns:
         HttpResponse: Renders the purchase points form or redirects to the Stripe checkout session.
     """
+    dollars_per_point = 1.00  # Or fetch from settings/config/db
+
     if request.method == 'POST':
         form = PurchasePointsForm(request.POST)
         if form.is_valid():
@@ -54,9 +56,9 @@ def purchase_points(request):
                 )
                 return redirect(session.url)
             except stripe.error.StripeError as e:
-                messages.error(request, f"Stripe error: {str(e)}")
+                messages.error(request, f"Stripe ошибка: {str(e)}")
         else:
-            messages.error(request, "Invalid amount.")
+            messages.error(request, "Неправильное количество.")
     else:
         form = PurchasePointsForm()
     return render(request, 'finances/purchase_points.html', {'form': form, 'dollars_per_point': dollars_per_point})
@@ -94,11 +96,11 @@ def purchase_success(request):
         Event.objects.create(
             user=user,
             event_type='Purchase',
-            description=f'Purchased {points} points'
+            description=f'Заказано {points} монет'
         )
-        messages.success(request, "Points successfully purchased!")
+        messages.success(request, "Монеты успешно куплены!")
     except stripe.error.StripeError as e:
-        messages.error(request, f"Payment error: {str(e)}")
+        messages.error(request, f"Ошибка оплаты: {str(e)}")
     return redirect("home")
 
 
@@ -119,17 +121,18 @@ def withdraw_points(request):
     wallet, created = Wallet.objects.get_or_create(user=user)
 
     if not user.stripe_account_id:
-        messages.warning(request, 'Please update your Stripe account ID before making a withdrawal.')
+        messages.warning(
+            request, 'Please update your Stripe account ID before making a withdrawal.')
         return redirect('update-profile')
 
     try:
         account = stripe.Account.retrieve(user.stripe_account_id)
         if 'transfers' not in account.capabilities or account.capabilities['transfers'] != 'active':
             messages.error(request,
-                           "Your Stripe account does not have the required capabilities enabled. Try reconnecting your account!")
+                           "В вашем аккаунте Stripe не включены необходимые возможности. Попробуйте переподключить аккаунт.")
             return redirect('update-profile')
     except stripe.error.StripeError as e:
-        messages.error(request, f"Stripe error: {e}")
+        messages.error(request, f"Stripe ошибка: {e}")
         return redirect('update-profile')
 
     if request.method == 'POST':
@@ -137,9 +140,10 @@ def withdraw_points(request):
         if form.is_valid():
             amount = form.cleaned_data['points']
             if wallet.balance < amount:
-                messages.error(request, "Insufficient points for this withdrawal.")
+                messages.error(
+                    request, "Недостаточно монет для вывода.")
             else:
-                payout_amount = amount * dollars_per_point * 0.5  # 50% fee
+                payout_amount = amount * dollars_per_point * 0.5  # 50%
 
                 try:
                     stripe.Transfer.create(
@@ -157,7 +161,8 @@ def withdraw_points(request):
                         amount=amount,
                         description='Points Withdrawal'
                     )
-                    messages.success(request, "Withdrawal successfully processed!")
+                    messages.success(
+                        request, "Вывод успешно обработан!")
 
                     Event.objects.create(
                         user=user,
@@ -167,9 +172,9 @@ def withdraw_points(request):
 
                     return redirect('home')
                 except stripe.error.StripeError as e:
-                    messages.error(request, f"Stripe error: {e}")
+                    messages.error(request, f"Stripe ошибка: {e}")
         else:
-            messages.error(request, "Amount is required.")
+            messages.error(request, "Сумма затребована.")
     else:
         form = WithdrawPointsForm(initial={'points': wallet.balance})
 

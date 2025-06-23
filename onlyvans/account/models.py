@@ -14,7 +14,8 @@ class CustomUser(AbstractUser):
         - is_content_creator (BooleanField): Indicates whether the user is a content creator. Defaults to False
         - stripe_account_id (CharField): Stripe account ID associated with the user. Can be blank or null.
     """
-    is_content_creator = models.BooleanField(default=False, verbose_name="Are you a content creator?")
+    is_content_creator = models.BooleanField(
+        default=False, verbose_name="Вы автор?")
     stripe_account_id = models.CharField(max_length=255, blank=True, null=True)
 
     def __str__(self):
@@ -34,18 +35,22 @@ class UserProfile(models.Model):
         - twitter_url (URLField): URL of the user's Twitter profile. Validated by `validate_twitter_url`. Can be blank or null.
         - instagram_url (URLField): URL of the user's Instagram profile. Validated by `validate_instagram_url`. Can be blank or null.
     """
-    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='profile')
-    profile_pic = models.ImageField(upload_to='avatars/', null=True, blank=True)
-    background_pic = models.ImageField(upload_to='backgrounds/', null=True, blank=True)
-    description = models.TextField(_("Description"), blank=True)
-    website_url = models.URLField(_("Website URL"), max_length=255, null=True, blank=True)
-    twitter_url = models.URLField(_("Twitter URL"), max_length=255, null=True, blank=True,
+    user = models.OneToOneField(
+        CustomUser, on_delete=models.CASCADE, related_name='profile')
+    profile_pic = models.ImageField(
+        upload_to='avatars/', null=True, blank=True)
+    background_pic = models.ImageField(
+        upload_to='backgrounds/', null=True, blank=True)
+    description = models.TextField(_("Описание"), blank=True)
+    website_url = models.URLField(
+        _("Сайт"), max_length=255, null=True, blank=True)
+    twitter_url = models.URLField(_("YouTube"), max_length=255, null=True, blank=True,
                                   validators=[validate_twitter_url])
-    instagram_url = models.URLField(_("Instagram URL"), max_length=255, null=True, blank=True,
+    instagram_url = models.URLField(_("VK"), max_length=255, null=True, blank=True,
                                     validators=[validate_instagram_url])
 
     def __str__(self):
-        return f"{self.user.username}'s profile"
+        return f"Профиль {self.user.username}"
 
 
 @receiver(post_save, sender=CustomUser)
@@ -75,7 +80,8 @@ class Event(models.Model):
         - description (TextField): Description of the event.
         - timestamp (DateTimeField): Time when the event occurred. Automatically set to the current time when created.
     """
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='events')
+    user = models.ForeignKey(
+        CustomUser, on_delete=models.CASCADE, related_name='events')
     event_type = models.CharField(max_length=50)
     description = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)

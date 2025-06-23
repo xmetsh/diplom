@@ -4,17 +4,31 @@
 {% block content %}
 <div class="container main py-5">
     {% include 'messages.html' %}
-    <h2>🪙 Purchase points</h2>
+    <h2>💰 Купить монеты</h2>
     <form method="post">
         {% csrf_token %}
         {{ form|crispy }}
         <div id="price-display-purchase" class="mt-3">
-            <strong>Total amount to pay: $<span id="amount-to-pay-purchase">0.00</span></strong>
+            <strong>К оплате: ₽<span id="amount-to-pay-purchase">0.00</span></strong>
         </div>
-        <button type="submit" class="btn btn-primary mt-3">Purchase</button>
+        <button type="submit" class="btn btn-primary mt-3">Купить</button>
     </form>
 </div>
 <script>
-    const dollarsPerPoint = {{ dollars_per_point }};
+    const dollarsPerPoint = parseFloat("{{ dollars_per_point|default:'0'|floatformat:2 }}");
+    const pointsSelect = document.querySelector('select[name="points"]');
+    const amountToPaySpan = document.getElementById('amount-to-pay-purchase');
+
+    function updatePrice() {
+        const points = parseInt(pointsSelect.value) || 0;
+        const amount = points * dollarsPerPoint;
+        amountToPaySpan.textContent = amount.toFixed(2);
+    }
+
+    pointsSelect.addEventListener('change', updatePrice);
+
+    // Инициализация при загрузке страницы
+    updatePrice();
 </script>
+
 {% endblock %}

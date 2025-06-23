@@ -1,6 +1,7 @@
 from django import forms
 from .models import Message
 
+
 class MessageForm(forms.ModelForm):
     """
     Form for creating and sending messages.
@@ -13,7 +14,7 @@ class MessageForm(forms.ModelForm):
         model = Message
         fields = ['body']
         widgets = {
-            'body': forms.Textarea(attrs={'placeholder': 'Type your message here...', 'rows': 3}),
+            'body': forms.Textarea(attrs={'placeholder': 'Начните писать...', 'rows': 3}),
         }
         labels = {
             'body': '',

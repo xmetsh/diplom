@@ -84,12 +84,12 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
 
-     // Logic for message form
+    // Logic for message form
     const messageForm = document.getElementById('message-form');
     const messageInput = document.getElementById('id_body');
 
     if (messageInput) {
-        messageInput.setAttribute('placeholder', 'Type your message here...');
+        messageInput.setAttribute('placeholder', 'Введите сообщение...');
         messageInput.focus();
 
         messageForm.addEventListener('keydown', function (event) {
@@ -100,7 +100,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-   // Logic for liking posts
+    // Logic for liking posts
     const likeButtons = document.querySelectorAll('.like-btn');
     likeButtons.forEach(button => {
         button.addEventListener('click', function () {
@@ -113,25 +113,25 @@ document.addEventListener('DOMContentLoaded', function () {
                     'Content-Type': 'application/json'
                 }
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    const likeCountSpan = this.querySelector('.like-count');
-                    likeCountSpan.textContent = data.likes_count;
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const likeCountSpan = this.querySelector('.like-count');
+                        likeCountSpan.textContent = data.likes_count;
 
-                    if (data.liked) {
-                        this.classList.add('liked');
-                        this.classList.remove('unliked');
-                        likeCountSpan.classList.add('liked');
-                        likeCountSpan.classList.remove('unliked');
-                    } else {
-                        this.classList.remove('liked');
-                        this.classList.add('unliked');
-                        likeCountSpan.classList.remove('liked');
-                        likeCountSpan.classList.add('unliked');
+                        if (data.liked) {
+                            this.classList.add('liked');
+                            this.classList.remove('unliked');
+                            likeCountSpan.classList.add('liked');
+                            likeCountSpan.classList.remove('unliked');
+                        } else {
+                            this.classList.remove('liked');
+                            this.classList.add('unliked');
+                            likeCountSpan.classList.remove('liked');
+                            likeCountSpan.classList.add('unliked');
+                        }
                     }
-                }
-            });
+                });
         });
     });
 });

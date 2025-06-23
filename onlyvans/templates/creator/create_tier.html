@@ -3,15 +3,15 @@
 {% block content %}
 <div class="container main py-5">
     {% include 'messages.html' %}
-    <h2>➕ Create a new Tier</h2>
+    <h2>➕ Создать новую подписку</h2>
     <hr>
     <div class="row">
-    <form method="post">
-        {% csrf_token %}
-        {{ form|crispy }}
-        <br>
-        <button class="btn btn-primary" type="submit">Create</button>
-    </form>
-        </div>
+        <form method="post">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <br>
+            <button class="btn btn-primary" type="submit">Создать</button>
+        </form>
+    </div>
 </div>
 {% endblock %}

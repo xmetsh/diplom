@@ -7,7 +7,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.core.paginator import Paginator
-from django.db.models import Case, When, Value, BooleanField, Q
+from django.db.models import Case, When, Value, BooleanField, Q, Count
 from django.shortcuts import get_object_or_404, render, redirect
 from interactions.models import Like
 from django.contrib.auth import update_session_auth_hash
@@ -52,12 +52,13 @@ def register(request):
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            messages.success(request, 'Your account has been created successfully! You can now login.')
+            messages.success(
+                request, 'Ваш аккаунт успешно создан! Теперь можете войти в него.')
 
             Event.objects.create(
                 user=user,
                 event_type='Registration',
-                description='Registered a new account'
+                description='Новый аккаунт зарегестрирован'
             )
 
             return redirect('login')
@@ -89,7 +90,7 @@ def userlogin(request):
                 else:
                     return redirect('client:dashboard')
             else:
-                messages.error(request, "Invalid username or password.")
+                messages.error(request, "Неправильный логин или пароль.")
     context = {'form': form}
     return render(request, 'account/login.html', context)
 
@@ -105,7 +106,7 @@ def userlogout(request):
         HttpResponse: A redirect to the home page.
     """
     logout(request)
-    messages.info(request, 'You have been logged out.')
+    messages.info(request, 'Вы вышли.')
     return redirect('home')
 
 
@@ -125,21 +126,26 @@ def profile(request, username):
     user_profile = get_object_or_404(UserProfile, user=user_viewed)
     is_own_profile = user_viewed == request.user
 
-    user_subscription = Subscription.objects.filter(user=request.user, status='ACTIVE', tier__user=user_viewed).first()
+    user_subscription = Subscription.objects.filter(
+        user=request.user, status='ACTIVE', tier__user=user_viewed).first()
 
     if is_own_profile:
-        posts_list = Post.objects.filter(user=user_viewed).order_by('-posted_at')
-        posts_list = posts_list.annotate(visible=Value(True, output_field=BooleanField()))
+        posts_list = Post.objects.filter(
+            user=user_viewed).order_by('-posted_at')
+        posts_list = posts_list.annotate(
+            visible=Value(True, output_field=BooleanField()))
     else:
         visible_posts = Post.objects.filter(user=user_viewed, is_free=True)
         subscribed_posts = Post.objects.none()
 
         if user_subscription:
-            subscribed_posts = Post.objects.filter(user=user_viewed, tier=user_subscription.tier)
+            subscribed_posts = Post.objects.filter(
+                user=user_viewed, tier=user_subscription.tier)
 
         posts_list = Post.objects.filter(user=user_viewed).annotate(
             visible=Case(
-                When(Q(is_free=True) | Q(pk__in=subscribed_posts), then=Value(True)),
+                When(Q(is_free=True) | Q(
+                    pk__in=subscribed_posts), then=Value(True)),
                 default=Value(False),
                 output_field=BooleanField(),
             )
@@ -149,11 +155,12 @@ def profile(request, username):
     page_number = request.GET.get('page')
     posts = paginator.get_page(page_number)
 
-    recipient_subscription = Subscription.objects.filter(user=user_viewed, status='ACTIVE').first()
+    recipient_subscription = Subscription.objects.filter(
+        user=user_viewed, status='ACTIVE').first()
     can_message = (
-            (user_subscription and user_subscription.tier.message_permission) or
-            (recipient_subscription and recipient_subscription.tier.message_permission) or
-            is_own_profile
+        (user_subscription and user_subscription.tier.message_permission) or
+        (recipient_subscription and recipient_subscription.tier.message_permission) or
+        is_own_profile
     )
 
     active_subscribers_count = get_active_subscribers_count(user_viewed)
@@ -161,7 +168,8 @@ def profile(request, username):
     total_likes_given = get_total_likes_given(user_viewed)
     total_subscriptions = get_total_subscriptions(user_viewed)
 
-    liked_posts = Like.objects.filter(user=request.user, post__in=posts_list).values_list('post_id', flat=True)
+    liked_posts = Like.objects.filter(
+        user=request.user, post__in=posts_list).values_list('post_id', flat=True)
 
     return render(request, 'account/profile.html', {
         'user': request.user,
@@ -213,29 +221,32 @@ def create_stripe_account(request):
 
             account_link = stripe.AccountLink.create(
                 account=account.id,
-                refresh_url=request.build_absolute_uri('/profile/create-stripe-account/'),
+                refresh_url=request.build_absolute_uri(
+                    '/profile/create-stripe-account/'),
                 return_url=request.build_absolute_uri('/profile/update/'),
                 type='account_onboarding'
             )
-            messages.success(request, 'Stripe account created successfully!')
+            messages.success(request, 'Stripe аккаунт успешно создан!')
             return redirect(account_link.url)
         except stripe.error.StripeError as e:
-            messages.error(request, f"Stripe error: {e}")
+            messages.error(request, f"Stripe ошибка: {e}")
     else:
         try:
             account = stripe.Account.retrieve(user.stripe_account_id)
             if account.requirements.currently_due:
                 account_link = stripe.AccountLink.create(
                     account=user.stripe_account_id,
-                    refresh_url=request.build_absolute_uri('/profile/create-stripe-account/'),
+                    refresh_url=request.build_absolute_uri(
+                        '/profile/create-stripe-account/'),
                     return_url=request.build_absolute_uri('/profile/update/'),
                     type='account_onboarding'
                 )
                 return redirect(account_link.url)
             else:
-                messages.info(request, "Stripe account is already fully configured.")
+                messages.info(
+                    request, "Stripe аккаунт уже успешно заполнен.")
         except stripe.error.StripeError as e:
-            messages.error(request, f"Stripe error: {e}")
+            messages.error(request, f"Stripe ошибка: {e}")
     return redirect('update-profile')
 
 
@@ -263,21 +274,22 @@ def update_profile(request):
     user = request.user
     if request.method == 'POST':
         user_form = CustomUserUpdateForm(request.POST, instance=user)
-        profile_form = UserProfileForm(request.POST, request.FILES, instance=user.profile)
+        profile_form = UserProfileForm(
+            request.POST, request.FILES, instance=user.profile)
         if user_form.is_valid() and profile_form.is_valid():
             user_form.save()
             profile_form.save()
-            messages.success(request, 'Your profile was successfully updated!')
+            messages.success(request, 'Ваш профиль был успешно улучшен!')
 
             Event.objects.create(
                 user=request.user,
                 event_type='Profile Update',
-                description='Updated profile'
+                description='Улучшение профиля'
             )
 
             return redirect('update-profile')
         else:
-            messages.error(request, 'Please correct the error below.')
+            messages.error(request, 'Пожалуйста, исправьте ошибку ниже.')
     else:
         user_form = CustomUserUpdateForm(instance=user)
         profile_form = UserProfileForm(instance=user.profile)
@@ -314,17 +326,18 @@ def change_password(request):
         if password_form.is_valid():
             user = password_form.save()
             update_session_auth_hash(request, user)
-            messages.success(request, 'Your password was successfully updated!')
+            messages.success(
+                request, 'Ваш пароль был успешно обновлен!')
 
             Event.objects.create(
                 user=request.user,
                 event_type='Profile Update',
-                description='Changed password'
+                description='Пароль изменен'
             )
 
             return redirect('update-profile')
         else:
-            messages.error(request, 'Please correct the error below.')
+            messages.error(request, 'Пожалуйста, исправьте ошибку ниже.')
     else:
         password_form = UserPasswordChangeForm(request.user)
     return render(request, 'account/change_password.html', {

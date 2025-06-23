@@ -45,7 +45,7 @@ def random_greeting():
     """
     greetings = [
         "Hello", "Hola", "Bonjour", "Cześć", "Hallo", "Ciao", "Olá",
-        "Привет", "こんにちは", "你好", "안녕하세요", "Merhaba", "Hej",
+        "Привет", "안녕하세요", "Merhaba", "Hej",
         "Hei", "Namaste", "Salam", "Sawubona", "Halo"
     ]
     return random.choice(greetings)

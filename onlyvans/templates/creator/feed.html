@@ -2,86 +2,92 @@
 {% load custom_filters %}
 {% csrf_token %}
 {% for post in posts %}
-    <div class="card mb-4 shadow-sm">
-        <div class="card-header">
-            <h5>{{ post.title }}</h5>
-            {% if post.tier %}
-                    <small class="text-muted">Tier: <strong>{{ post.tier.name }}</strong></small>
-                {% else %}
-            <small class="text-muted"><strong>🎁 Free Post!</strong></small>
-                {% endif %}
-        </div>
-
-        {% if post.visible %}
-            {% if post.media.all|length > 1 %}
-            <div id="carousel{{ post.id }}" class="carousel slide">
-                <div class="carousel-indicators">
-                    {% for media in post.media.all %}
-                    <button type="button" data-bs-target="#carousel{{ post.id }}" data-bs-slide-to="{{ forloop.counter0 }}"
-                            class="{% if forloop.first %}active{% endif %}" aria-label="Slide {{ forloop.counter }}"></button>
-                    {% endfor %}
-                </div>
-                <div class="carousel-inner">
-                    {% for media in post.media.all %}
-                    <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                        {% if media.file.url|lower|ends_with:".jpg" or media.file.url|lower|ends_with:".png" %}
-                        <img src="{{ media.file.url }}" class="d-block w-100" alt="{{ media.file.name }}">
-                        {% elif media.file.url|lower|ends_with:".mp4" or media.file.url|lower|ends_with:".avi" %}
-                        <video class="d-block w-100" controls>
-                            <source src="{{ media.file.url }}" type="{{ media.file.content_type }}">
-                            Your browser does not support the video tag.
-                        </video>
-                        {% endif %}
-                    </div>
-                    {% endfor %}
-                </div>
-                <button class="carousel-control-prev" type="button" data-bs-target="#carousel{{ post.id }}" data-bs-slide="prev">
-                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Previous</span>
-                </button>
-                <button class="carousel-control-next" type="button" data-bs-target="#carousel{{ post.id }}" data-bs-slide="next">
-                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Next</span>
-                </button>
-            </div>
-
-            {% elif post.media.all|length == 1 %}
-            {% with media=post.media.all.first %}
-            {% if media.file.url|lower|ends_with:".jpg" or media.file.url|lower|ends_with:".png" %}
-            <img src="{{ media.file.url }}" class="card-img-top" alt="{{ media.file.name }}">
-            {% elif media.file.url|lower|ends_with:".mp4" or media.file.url|lower|ends_with:".avi" %}
-            <video class="card-img-top" controls>
-                <source src="{{ media.file.url }}" type="{{ media.file.content_type }}">
-                Your browser does not support the video tag.
-            </video>
-            {% endif %}
-            {% endwith %}
-            {% endif %}
-            <div class="card-body">
-                <p class="card-text">{{ post.text }}</p>
-            </div>
+<div class="card mb-4 shadow-sm">
+    <div class="card-header">
+        <h5>{{ post.title }}</h5>
+        {% if post.tier %}
+        <small class="text-muted">Tier: <strong>{{ post.tier.name }}</strong></small>
         {% else %}
-            <div class="card-body">
-                <p class="card-text text-muted">🔒 This content is locked. Subscribe to unlock.</p>
-            </div>
+        <small class="text-muted"><strong>🎁 Бесплатная публикация!</strong></small>
         {% endif %}
+    </div>
 
-        <div class="card-footer">
-            <div class="d-flex justify-content-between align-items-center">
-                <div class="btn-group">
-                    {% if post.user == request.user %}
-                    <a href="{% url 'creator:post_delete' post.id %}" class="btn btn-sm btn-outline-secondary">Delete</a>
-                    {% endif %}
-                    <button type="button" class="btn btn-sm btn-outline-secondary like-btn {% if post.id in liked_posts %}liked{% endif %}" data-post-id="{{ post.id }}">
-                        👍 <span class="like-count {% if post.id in liked_posts %}liked{% endif %}">{{ post.likes_count }}</span>
-                    </button>
-                </div>
-                <small class="text-muted">Posted by <a href="{% url 'profile' post.user.username %}">@{{ post.user.username }}</a> {{ post.posted_at|timesince }} ago</small>
+    {% if post.visible %}
+    {% if post.media.all|length > 1 %}
+    <div id="carousel{{ post.id }}" class="carousel slide">
+        <div class="carousel-indicators">
+            {% for media in post.media.all %}
+            <button type="button" data-bs-target="#carousel{{ post.id }}" data-bs-slide-to="{{ forloop.counter0 }}"
+                class="{% if forloop.first %}active{% endif %}" aria-label="Slide {{ forloop.counter }}"></button>
+            {% endfor %}
+        </div>
+        <div class="carousel-inner">
+            {% for media in post.media.all %}
+            <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                {% if media.file.url|lower|ends_with:".jpg" or media.file.url|lower|ends_with:".png" %}
+                <img src="{{ media.file.url }}" class="d-block w-100" alt="{{ media.file.name }}">
+                {% elif media.file.url|lower|ends_with:".mp4" or media.file.url|lower|ends_with:".avi" %}
+                <video class="d-block w-100" controls>
+                    <source src="{{ media.file.url }}" type="{{ media.file.content_type }}">
+                    Ваш браузер не поддерживает видео.
+                </video>
+                {% endif %}
             </div>
+            {% endfor %}
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carousel{{ post.id }}"
+            data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Предыдущий</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carousel{{ post.id }}"
+            data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Дальше</span>
+        </button>
+    </div>
+
+    {% elif post.media.all|length == 1 %}
+    {% with media=post.media.all.first %}
+    {% if media.file.url|lower|ends_with:".jpg" or media.file.url|lower|ends_with:".png" %}
+    <img src="{{ media.file.url }}" class="card-img-top" alt="{{ media.file.name }}">
+    {% elif media.file.url|lower|ends_with:".mp4" or media.file.url|lower|ends_with:".avi" %}
+    <video class="card-img-top" controls>
+        <source src="{{ media.file.url }}" type="{{ media.file.content_type }}">
+        Ваш браузер не поддерживает видео.
+    </video>
+    {% endif %}
+    {% endwith %}
+    {% endif %}
+    <div class="card-body">
+        <p class="card-text">{{ post.text }}</p>
+    </div>
+    {% else %}
+    <div class="card-body">
+        <p class="card-text text-muted">🔒 Этот контент платный. Оформите подписку, чтобы получить доступ.</p>
+    </div>
+    {% endif %}
+
+    <div class="card-footer">
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="btn-group">
+                {% if post.user == request.user %}
+                <a href="{% url 'creator:post_delete' post.id %}" class="btn btn-sm btn-outline-secondary">Удалить</a>
+                {% endif %}
+                <button type="button"
+                    class="btn btn-sm btn-outline-secondary like-btn {% if post.id in liked_posts %}liked{% endif %}"
+                    data-post-id="{{ post.id }}">
+                    👍 <span class="like-count {% if post.id in liked_posts %}liked{% endif %}">
+                        {{post.likes_count}}</span>
+                </button>
+            </div>
+            <small class="text-muted">Содано <a href="{% url 'profile' post.user.username %}">@{{ post.user.username}}
+                </a> {{ post.posted_at|timesince }} ago</small>
         </div>
     </div>
+</div>
 {% empty %}
-    <p>No posts available.</p>
+<p>Нет доступных публикаций.</p>
 {% endfor %}
 
 {% if posts.paginator.num_pages > 1 %}
@@ -104,24 +110,24 @@
         {% for num in posts.paginator.page_range %}
         {% if posts.number == num %}
         <li class="page-item active"><a class="page-link">{{ num }}</a></li>
-        {% elif num > posts.number|add:'-5' and num < posts.number|add:'5' %}
-        <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
-        {% endif %}
-        {% endfor %}
+        {% elif num > posts.number|add:'-5' and num < posts.number|add:'5' %} <li class="page-item"><a class="page-link"
+                href="?page={{ num }}">{{ num }}</a></li>
+            {% endif %}
+            {% endfor %}
 
-        {% if posts.has_next %}
-        <li class="page-item">
-            <a class="page-link" href="?page={{ posts.next_page_number }}" aria-label="Next">
-                <span aria-hidden="true">&raquo;</span>
-            </a>
-        </li>
-        {% else %}
-        <li class="page-item disabled">
-            <a class="page-link" aria-label="Next">
-                <span aria-hidden="true">&raquo;</span>
-            </a>
-        </li>
-        {% endif %}
+            {% if posts.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ posts.next_page_number }}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <a class="page-link" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+            {% endif %}
     </ul>
 </nav>
 {% endif %}

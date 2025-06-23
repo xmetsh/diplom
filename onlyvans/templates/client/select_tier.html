@@ -3,20 +3,21 @@
 {% block content %}
 <div class="container main py-5">
     {% include 'messages.html' %}
-    <h2>🤩 Subscribe to @{{ creator.username }}</h2>
+    <h2>🤩 Подписаться на @{{ creator.username }}</h2>
 
     <hr>
     <div class="row">
         <p>
-            Subscribe to @{{ creator.username }} to get access to exclusive content and support their work. Choose a
-            tier
-            that fits your budget and preferences.
+            Подпишись на @{{ creator.username }}, чтобы получить доступ к эксклюзивному контенту и поддержать работу.
+            Выберите уровень подписки
+            которая вам больше подходит.
         </p>
         <p>
-            <strong>Subscribing to a creator is a monthly commitment. You can cancel your subscription at any time.</strong>
+            <strong>Подписка на создателя - это ежемесячное обязательство. Вы можете отменить подписку в любое
+                время.</strong>
         </p>
         <h3>
-            Available Tiers:
+            Доступные подписки:
         </h3>
         {% for tier in tiers %}
         <div class="col-md-4">
@@ -27,16 +28,17 @@
                 <div class="card-body">
                     <p>{{ tier.description }}</p>
                     <h5>{{ tier.points_price }} 🪙</h5>
-                            <p>Message Permission: <strong>{{ tier.message_permission|yesno:"✔️,❌" }}</strong></p>
-                    <a href="{% url 'client:subscribe-to-tier' creator.username tier.id %}" class="btn btn-primary">Subscribe</a>
+                    <p>Разрешение на отправку сообщений: <strong>{{ tier.message_permission|yesno:"✔️,❌" }}</strong></p>
+                    <a href="{% url 'client:subscribe-to-tier' creator.username tier.id %}"
+                        class="btn btn-primary">Подписаться</a>
                 </div>
             </div>
         </div>
         {% empty %}
-        <p>This creator does not have any tiers available.</p>
+        <p>У этого автора пока нет доступных подписок.</p>
         {% endfor %}
         <p>
-            <a href="{% url 'profile' creator.username %}" class="btn btn-secondary">Back to profile</a>
+            <a href="{% url 'profile' creator.username %}" class="btn btn-secondary">Вернуться в профиль</a>
         </p>
     </div>
 </div>

@@ -21,16 +21,18 @@ class Tier(models.Model):
     name = models.CharField(max_length=50)
     points_price = models.IntegerField()
     description = models.TextField(max_length=500)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='tiers')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,
+                             on_delete=models.CASCADE, related_name='tiers')
     message_permission = models.BooleanField(default=False)
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=['user', 'name'], name='unique_tier_name_per_user')
+            models.UniqueConstraint(
+                fields=['user', 'name'], name='unique_tier_name_per_user')
         ]
 
     def __str__(self):
-        return f'{self.name} - {self.points_price} points'
+        return f'{self.name} - {self.points_price} монет'
 
 
 class Post(models.Model):
@@ -49,9 +51,11 @@ class Post(models.Model):
     title = models.CharField(max_length=100)
     text = models.TextField(max_length=1500)
     posted_at = models.DateTimeField(auto_now_add=True)
-    is_free = models.BooleanField(default=False, verbose_name="Is this a free post?")
+    is_free = models.BooleanField(
+        default=False, verbose_name="Это бесплатная публикация?")
     tier = models.ForeignKey(Tier, on_delete=models.SET_NULL, null=True)
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='user_posts')
+    user = models.ForeignKey(
+        CustomUser, on_delete=models.CASCADE, related_name='user_posts')
 
     def __str__(self):
         return self.title
@@ -82,10 +86,12 @@ class Media(models.Model):
     - tier: The tier associated with the media file.
     """
 
-    post = models.ForeignKey(Post, related_name='media', on_delete=models.CASCADE, null=True)
+    post = models.ForeignKey(Post, related_name='media',
+                             on_delete=models.CASCADE, null=True)
     file = models.FileField(upload_to=get_upload_to)
     type = models.CharField(max_length=10, editable=False)
-    tier = models.ForeignKey(Tier, on_delete=models.CASCADE, editable=False, null=True)
+    tier = models.ForeignKey(
+        Tier, on_delete=models.CASCADE, editable=False, null=True)
 
     def save(self, *args, **kwargs):
         """
@@ -99,7 +105,7 @@ class Media(models.Model):
                 elif mime_type.startswith('video'):
                     self.type = 'video'
                 else:
-                    raise ValidationError("Unsupported file type.")
+                    raise ValidationError("Неподдерживаемый тип файла.")
             self.tier = self.post.tier
         super().save(*args, **kwargs)
 

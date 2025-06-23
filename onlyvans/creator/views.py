@@ -27,13 +27,15 @@ def dashboard(request):
     Returns:
         HttpResponse: The rendered dashboard page.
     """
-    posts_list = Post.objects.filter(user=request.user).annotate(visible=Value(True, output_field=CharField())).order_by('-posted_at')
+    posts_list = Post.objects.filter(user=request.user).annotate(
+        visible=Value(True, output_field=CharField())).order_by('-posted_at')
     paginator = Paginator(posts_list, 10)
 
     page_number = request.GET.get('page')
     posts = paginator.get_page(page_number)
 
-    liked_posts = Like.objects.filter(user=request.user, post__in=posts_list).values_list('post_id', flat=True)
+    liked_posts = Like.objects.filter(
+        user=request.user, post__in=posts_list).values_list('post_id', flat=True)
 
     context = {
         'posts': posts,
@@ -70,10 +72,12 @@ def create_post(request):
             post.save()
 
             files = request.FILES.getlist('files')
-            allowed_types = ['image/jpeg', 'image/png', 'video/mp4', 'video/avi']
+            allowed_types = ['image/jpeg',
+                             'image/png', 'video/mp4', 'video/avi']
             for file in files:
                 if file.content_type not in allowed_types:
-                    media_form.add_error('files', f'Invalid file type: {file.content_type}')
+                    media_form.add_error(
+                        'files', f'Неподдерживаемый формат файла: {file.content_type}')
             if media_form.errors:
                 post.delete()
                 return render(request, 'creator/create_post.html', {
@@ -84,7 +88,7 @@ def create_post(request):
                 Event.objects.create(
                     user=request.user,
                     event_type='POST_CREATED',
-                    description=f'Created a new post: {post.title}'
+                    description=f'Новая публикация: {post.title}'
                 )
 
             for file in files:
@@ -123,12 +127,12 @@ def post_delete(request, post_id):
         Event.objects.create(
             user=request.user,
             event_type='POST_DELETED',
-            description=f'Deleted a post: {post.title}'
+            description=f'Удалена публикация: {post.title}'
         )
         post.delete()
-        messages.success(request, 'Post deleted successfully.')
+        messages.success(request, 'Публикация успешно удалена.')
     else:
-        messages.error(request, 'You do not have permission to delete this post.')
+        messages.error(request, 'У вас нет прав для удаления этой публикации.')
     return redirect('creator:dashboard')
 
 
@@ -147,7 +151,8 @@ def tiers(request):
     Returns:
         HttpResponse: The rendered tiers page.
     """
-    user_tiers = Tier.objects.filter(user=request.user).order_by('-points_price')
+    user_tiers = Tier.objects.filter(
+        user=request.user).order_by('-points_price')
 
     tiers_with_subscribers = []
     for tier in user_tiers:
@@ -182,7 +187,8 @@ def create_tier(request):
         HttpResponse: The rendered create tier page or redirects to the tiers page on successful creation.
     """
     if not request.user.stripe_account_id:
-        messages.error(request, "You need to connect your Stripe Account ID before creating a tier.")
+        messages.error(
+            request, "Перед созданием подписки вам необходимо подключить идентификатор учетной записи.")
         return redirect('update-profile')
     if request.method == 'POST':
         form = TierForm(request.POST, user=request.user)
@@ -190,12 +196,12 @@ def create_tier(request):
             tier = form.save(commit=False)
             tier.user = request.user
             tier.save()
-            messages.success(request, 'Tier created successfully.')
+            messages.success(request, 'Подписка успешно создана.')
 
             Event.objects.create(
                 user=request.user,
                 event_type='TIER_CREATED',
-                description=f'Created a new tier: {tier.name}'
+                description=f'Создана новая подписка: {tier.name}'
             )
 
             return redirect('creator:tiers')
@@ -224,19 +230,21 @@ def delete_tier(request, tier_id):
     tier = get_object_or_404(Tier, id=tier_id, user=request.user)
 
     if request.method == 'POST':
-        active_subscribers = Subscription.objects.filter(tier=tier, status='ACTIVE').exists()
+        active_subscribers = Subscription.objects.filter(
+            tier=tier, status='ACTIVE').exists()
 
         if active_subscribers:
-            messages.error(request, "You cannot delete this tier because it has active subscribers.")
+            messages.error(
+                request, "Вы не можете удалить эту подписку, так как есть активные пользователи.")
             return redirect('creator:tiers')
 
         tier.delete()
         Event.objects.create(
             user=request.user,
             event_type='TIER_DELETED',
-            description=f'Deleted a tier: {tier.name}'
+            description=f'Удалена подписка: {tier.name}'
         )
-        messages.success(request, "Tier deleted successfully.")
+        messages.success(request, "Подписка успешно удалена.")
         return redirect('creator:tiers')
 
     return render(request, 'creator/tiers.html', {'tier': tier})

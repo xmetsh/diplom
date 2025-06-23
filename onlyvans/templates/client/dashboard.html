@@ -4,11 +4,18 @@
 {% block content %}
 <div class="container main py-5">
     {% include 'messages.html' %}
-    <h2>👋 {% random_greeting %}, <a href="{% url 'profile' user.username %}">{% if user.first_name %}{{ user.first_name }}{% else %}@{{ user.username }}{% endif %}!</a></h2>
+    {% random_greeting as greeting %}
+    <h2>👋 {{ greeting }}, <a href="{% url 'profile' user.username %}">
+            {% if user.first_name %}
+            {{ user.first_name }}
+            {% else %}
+            @{{ user.username }}
+            {% endif %}
+        </a>!</h2>
     <hr>
     <div class="row">
         <div class="col-md-12">
-            <h3>Posts from your subscriptions:</h3>
+            <h3>Публикации из подписок:</h3>
             {% include 'creator/feed.html' with posts=posts %}
         </div>
     </div>

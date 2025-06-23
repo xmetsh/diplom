@@ -3,11 +3,11 @@
 <nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
     <div class="container">
         <a class="navbar-brand" href="/">
-            Only<strong>Vans</strong>
-            <img src="{% static 'img/onlyvans.svg' %}" alt="OnlyVans" width="30" height="30">
+            Content<strong>Pro</strong>
+            <img src="{% static 'img/logot.png' %}" alt="OnlyVans" width="30" height="30">
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggler"
-                aria-controls="navbarToggler" aria-expanded="false" aria-label="Toggle navigation">
+            aria-controls="navbarToggler" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div id="navbarToggler" class="collapse navbar-collapse">
@@ -17,72 +17,72 @@
                 <!-- Navbar for creators -->
                 <li class="nav-item">
                     <a class="{% if request.resolver_match.url_name == 'dashboard' %}btn btn-secondary navbar-btn{% else %}nav-link{% endif %}"
-                       href="{% url 'creator:dashboard' %}">Dashboard</a>
+                        href="{% url 'creator:dashboard' %}">Лента</a>
                 </li>
                 <li class="nav-item">
                     <a class="{% if request.resolver_match.url_name == 'history' %}btn btn-secondary navbar-btn{% else %}nav-link{% endif %}"
-                       href="{% url 'history' %}">History</a>
+                        href="{% url 'history' %}">История событий</a>
                 </li>
                 <li class="nav-item">
                     <a class="{% if request.path|starts_with:'/messages/' %}btn btn-secondary navbar-btn{% else %}nav-link{% endif %}"
-                       href="{% url 'direct_messages' %}">Messages</a>
+                        href="{% url 'direct_messages' %}">Сообщения</a>
                 </li>
                 <li class="nav-item">
                     <a class="{% if request.resolver_match.url_name == 'tiers' %}btn btn-secondary navbar-btn{% else %}nav-link{% endif %}"
-                       href="{% url 'creator:tiers' %}">Tiers</a>
+                        href="{% url 'creator:tiers' %}">Подписки</a>
                 </li>
                 <li class="nav-item">
                     <a class="{% if request.resolver_match.url_name == 'profile' and request.user.username == user.username %}btn btn-secondary navbar-btn{% else %}nav-link{% endif %}"
-                       href="{% url 'profile' username=user.username %}">My profile</a>
+                        href="{% url 'profile' username=user.username %}">Мой профиль</a>
                 </li>
                 <li class="nav-item">
                     <a class="{% if request.resolver_match.url_name == 'logout' %}btn btn-secondary navbar-btn{% else %}nav-link{% endif %}"
-                       href="{% url 'logout' %}">Log out</a>
+                        href="{% url 'logout' %}">Выйти</a>
                 </li>
                 {% else %}
                 <!-- Navbar for clients -->
                 <li class="nav-item">
                     <a class="{% if request.resolver_match.url_name == 'dashboard' %}btn btn-secondary navbar-btn{% else %}nav-link{% endif %}"
-                       href="{% url 'client:dashboard' %}">Dashboard</a>
+                        href="{% url 'client:dashboard' %}">Лента</a>
                 </li>
                 <li class="nav-item">
                     <a class="{% if request.resolver_match.url_name == 'history' %}btn btn-secondary navbar-btn{% else %}nav-link{% endif %}"
-                       href="{% url 'history' %}">History</a>
+                        href="{% url 'history' %}">История событий</a>
                 </li>
                 <li class="nav-item">
                     <a class="{% if request.resolver_match.url_name == 'discover_creators' %}btn btn-secondary navbar-btn{% else %}nav-link{% endif %}"
-                       href="{% url 'client:discover_creators' %}">Discover</a>
+                        href="{% url 'client:discover_creators' %}">Поиск</a>
                 </li>
                 <li class="nav-item">
                     <a class="{% if request.path|starts_with:'/messages/' %}btn btn-secondary navbar-btn{% else %}nav-link{% endif %}"
-                       href="{% url 'direct_messages' %}">Messages</a>
+                        href="{% url 'direct_messages' %}">Сообщения</a>
                 </li>
                 <li class="nav-item">
                     <a class="{% if request.resolver_match.url_name == 'subscriptions' %}btn btn-secondary navbar-btn{% else %}nav-link{% endif %}"
-                       href="{% url 'client:subscriptions' %}">Subscriptions</a>
+                        href="{% url 'client:subscriptions' %}">Подписки</a>
                 </li>
                 <li class="nav-item">
                     <a class="{% if request.resolver_match.url_name == 'profile' and request.user.username == user.username %}btn btn-secondary navbar-btn{% else %}nav-link{% endif %}"
-                       href="{% url 'profile' username=user.username %}">My profile</a>
+                        href="{% url 'profile' username=user.username %}">Мой профиль</a>
                 </li>
                 <li class="nav-item">
                     <a class="{% if request.resolver_match.url_name == 'logout' %}btn btn-secondary navbar-btn{% else %}nav-link{% endif %}"
-                       href="{% url 'logout' %}">Log out</a>
+                        href="{% url 'logout' %}">Выйти</a>
                 </li>
                 {% endif %}
                 {% else %}
                 <!-- Navbar for users not logged in -->
                 <li class="nav-item">
                     <a class="{% if request.path == '/' %}btn btn-secondary navbar-btn{% else %}nav-link{% endif %}"
-                       href="/">Home</a>
+                        href="/">Главная</a>
                 </li>
                 <li class="nav-item">
                     <a class="{% if request.resolver_match.url_name == 'register' %}btn btn-secondary navbar-btn{% else %}nav-link{% endif %}"
-                       href="{% url 'register' %}">Register</a>
+                        href="{% url 'register' %}">Зарегистрироваться</a>
                 </li>
                 <li class="nav-item">
                     <a class="{% if request.resolver_match.url_name == 'login' %}btn btn-secondary navbar-btn{% else %}nav-link{% endif %}"
-                       href="{% url 'login' %}">Log In</a>
+                        href="{% url 'login' %}">Войти</a>
                 </li>
                 {% endif %}
             </ul>
@@ -94,13 +94,13 @@
 <nav class="navbar navbar-expand-lg bg-light">
     <div class="container">
         <span class="navbar-text">
-            You have: {{ request.user.wallet.balance|default:"0" }} points
+            У вас: {{ request.user.wallet.balance|default:"0" }} монет
         </span>
         <div class="ms-auto">
             {% if user.is_content_creator %}
-            <a class="btn btn-success" href="{% url 'withdraw' %}">Withdraw your points</a>
+            <a class="btn btn-success" href="{% url 'withdraw' %}">Вывести монеты</a>
             {% else %}
-            <a class="btn btn-success" href="{% url 'purchase' %}">Purchase more points</a>
+            <a class="btn btn-success" href="{% url 'purchase' %}">Купить монеты</a>
             {% endif %}
         </div>
     </div>

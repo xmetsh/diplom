@@ -3,11 +3,12 @@
 {% block content %}
 <div class="container main py-5">
     {% include 'messages.html' %}
-    <h2>📅 Your active subscriptions</h2>
+    <h2>📅 Активные подписки</h2>
     <hr>
     <p>
-        Here you can see all your active subscriptions. You can extend them for another 30 days or cancel them at any
-        time. Remember that you can only subscribe to one tier per creator. If you want to change your tier, you need to cancel your current subscription and subscribe to a new one.
+        Здесь вы можете просмотреть все свои активные подписки. Вы можете продлить их еще на 30 дней или отменить в
+        любое время. Помните, что вы можете подписаться только на один уровень для каждого создателя. Если вы хотите
+        изменить свой уровень, вам необходимо отменить текущую подписку и подписаться на новую.
     </p>
     <div class="row">
         {% for subscription in subscriptions %}
@@ -16,21 +17,32 @@
                 <div class="card-body">
                     <h5 class="card-title">{{ subscription.tier.name }}</h5>
                     <p class="card-text">{{ subscription.tier.description }}</p>
-                    <p class="card-text"><strong>Creator: </strong><a href="{% url 'profile' subscription.tier.user.username %}">@{{ subscription.tier.user.username }}</a> </p>
-                    <p class="card-text"><strong>Price: </strong>{{ subscription.tier.points_price }}🪙 a month</p>
-                    <p class="card-text"><strong>Message Permission:</strong> {{ subscription.tier.message_permission|yesno:"✔️,❌" }}</p>
-                    <p class="card-text"><strong>Expires on:</strong> {{ subscription.end_date|date:"F j, Y" }}</p>
-                    <a href="{% url 'client:extend_subscription' subscription.id %}" class="btn btn-primary">Extend another 30 days</a>
-                    <a href="{% url 'client:cancel_subscription' subscription.id %}" class="btn btn-danger">Unsubscribe</a>
+                    <p class="card-text">
+                        <strong>Автор: </strong>
+                        <a href="{% url 'profile' subscription.tier.user.username %}">
+                            @{{subscription.tier.user.username }}
+                        </a>
+                    </p>
+                    <p class="card-text"><strong>Цена: </strong>{{ subscription.tier.points_price }}💰 в месяц</p>
+                    <p class="card-text">
+                        <strong>Разрешение на отправку сообщений:</strong>
+                        {{subscription.tiermessage_permission|yesno:"✔️,❌" }}
+                    </p>
+                    <p class="card-text"><strong>Истекает:</strong> {{ subscription.end_date|date:"F j, Y" }}</p>
+                    <a href="{% url 'client:extend_subscription' subscription.id %}" class="btn btn-primary">Продлить
+                        еще на 30 дней</a>
+                    <a href="{% url 'client:cancel_subscription' subscription.id %}" class="btn btn-danger">Отменить
+                        подписку</a>
                 </div>
             </div>
         </div>
         {% empty %}
         <p>
-            <strong>You have no active subscriptions.</strong>
+            <strong>У вас нет активных подписок</strong>
         </p>
         <p>
-            <a href="{% url 'client:discover_creators' %}" class="btn btn-outline-primary">Discover creators</a>
+            <a href="{% url 'client:discover_creators' %}" class="btn btn-outline-primary">Откройте для себя
+                создателей</a>
         </p>
         {% endfor %}
     </div>
